@@ -1,0 +1,103 @@
+<html>
+<head>
+<script>
+
+onload = function(){
+	change(17);
+}
+
+function change(rects){
+	var c = document.getElementById("mainCanvas");
+    var ctx = c.getContext("2d");
+	var w = c.width;
+	var h = c.height;
+    ctx.clearRect(0, 0, w, h);
+    for(var i = 0; i < rects; i++){
+        drawRect(ctx, w, h);
+    }
+    
+}
+
+function drawRect(ctx, width, height){
+    var rccf = function(){ return getRandomInt(160, 255); };
+    var x, y, w, h, s, v, o;
+    
+    // 色の決定
+    h = getRandom(0, 360);
+    s = getRandom(128 + 64, 255);
+    v = getRandom(128 + 64 + 32, 255)
+    o = HSVtoRGB(h, s, v);
+    ctx.fillStyle = "rgba(" + o.r + ", " + o.g + ", " + o.b + ", " + "0.75)";
+    
+    // 矩形の決定
+    x = getRandomInt(0, width - 1) & 0xfffff0;
+    y = getRandomInt(0, height - 1) & 0xfffff0;
+    w = getRandomInt(64, width >> 1) & 0xfffff0;
+    h = getRandomInt(64, height >> 1) & 0xfffff0;
+    x -= w / 2;
+    y -= h / 2;
+    
+    // 描画
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.closePath();
+    ctx.fill();
+}
+
+function getRandom(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function getRandomInt(min, max) {
+    return Math.floor( Math.random() * (max - min + 1) ) + min;
+}
+
+function HSVtoRGB (h, s, v) {
+    // http://d.hatena.ne.jp/ja9/20100903/1283504341
+    var r, g, b; // 0..255
+
+    while (h < 0) {
+        h += 360;
+    }
+    h = h % 360;
+
+    // 特別な場合 saturation = 0
+    if (s == 0) {
+        // → RGB は V に等しい
+        v = Math.round(v);
+        return {'r': v, 'g': v, 'b': v};
+    }
+
+    s = s / 255;
+
+    var i = Math.floor(h / 60) % 6,
+    f = (h / 60) - i,
+    p = v * (1 - s),
+    q = v * (1 - f * s),
+    t = v * (1 - (1 - f) * s)
+    
+    switch (i) {
+        case 0 :
+            r = v;  g = t;  b = p;  break;
+        case 1 :
+            r = q;  g = v;  b = p;  break;
+        case 2 :
+            r = p;  g = v;  b = t;  break;
+        case 3 :
+            r = p;  g = q;  b = v;  break;
+        case 4 :
+            r = t;  g = p;  b = v;  break;
+        case 5 :
+            r = v;  g = p;  b = q;  break;
+    }
+    return {'r': Math.round(r), 'g': Math.round(g), 'b': Math.round(b)};
+}
+
+</script>
+</head>
+<body>
+<h1>random logo maker</h1>
+<canvas id="mainCanvas" width="512" height="512" style="border:0;"></canvas>
+<button onmousedown="change(17);">change</button>
+</body>
+</html>
